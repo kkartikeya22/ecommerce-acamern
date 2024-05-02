@@ -12,6 +12,7 @@ import {
 } from "react-icons/ai";
 import { FaHeart, FaUser } from "react-icons/fa";
 import FavoritesCount from "../Products/FavoritesCount";
+import "./Navigation.css"
 
 const Navigation = () => {
   const { userInfo } = useSelector((state) => state.auth);
