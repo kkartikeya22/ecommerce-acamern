@@ -12,68 +12,67 @@ import { toast } from "react-toastify";
 
 const AdminProductUpdate = () => {
   const params = useParams();
-
-  const { data: productData } = useGetProductByIdQuery(params._id);
-
-  console.log(productData);
-
-  const [image, setImage] = useState(productData?.image || "");
-  const [name, setName] = useState(productData?.name || "");
-  const [description, setDescription] = useState(
-    productData?.description || ""
-  );
-  const [price, setPrice] = useState(productData?.price || "");
-  const [category, setCategory] = useState(productData?.category || "");
-  const [quantity, setQuantity] = useState(productData?.quantity || "");
-  const [brand, setBrand] = useState(productData?.brand || "");
-  const [stock, setStock] = useState(productData?.countInStock);
-
-  // hook
   const navigate = useNavigate();
 
-  // Fetch categories using RTK Query
+  // Fetching product data by ID
+  const { data: productData } = useGetProductByIdQuery(params._id);
+
+  // States for the product form fields
+  const [image, setImage] = useState(productData?.image || "");
+  const [name, setName] = useState(productData?.name || "");
+  const [description, setDescription] = useState(productData?.description || "");
+  const [price, setPrice] = useState(productData?.price || "");
+  const [category, setCategory] = useState(productData?.category?._id || "");
+  const [quantity, setQuantity] = useState(productData?.quantity || "");
+  const [brand, setBrand] = useState(productData?.brand || "");
+  const [stock, setStock] = useState(productData?.countInStock || 0);
+
+  // Fetching categories
   const { data: categories = [] } = useFetchCategoriesQuery();
 
+  // RTK Query mutations
   const [uploadProductImage] = useUploadProductImageMutation();
-
-  // Define the update product mutation
   const [updateProduct] = useUpdateProductMutation();
-
-  // Define the delete product mutation
   const [deleteProduct] = useDeleteProductMutation();
 
+  // Update state when product data is available
   useEffect(() => {
-    if (productData && productData._id) {
+    if (productData) {
       setName(productData.name);
       setDescription(productData.description);
       setPrice(productData.price);
       setCategory(productData.category?._id);
       setQuantity(productData.quantity);
       setBrand(productData.brand);
+      setStock(productData.countInStock);
       setImage(productData.image);
     }
   }, [productData]);
 
+  // Uploading the product image
   const uploadFileHandler = async (e) => {
     const formData = new FormData();
     formData.append("image", e.target.files[0]);
+
     try {
       const res = await uploadProductImage(formData).unwrap();
-      toast.success("Item added successfully", {
+      toast.success("Image uploaded successfully!", {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
       });
       setImage(res.image);
     } catch (err) {
-      toast.success("Item added successfully", {
+      toast.error("Failed to upload image. Try again.", {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
       });
     }
   };
 
+  // Submitting the product update form
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const formData = new FormData();
       formData.append("image", image);
@@ -85,23 +84,25 @@ const AdminProductUpdate = () => {
       formData.append("brand", brand);
       formData.append("countInStock", stock);
 
-      // Update product using the RTK Query mutation
-      const data = await updateProduct({ productId: params._id, formData });
+      const { data } = await updateProduct({
+        productId: params._id,
+        formData,
+      });
 
-      if (data?.error) {
+      if (data.error) {
         toast.error(data.error, {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 2000,
         });
       } else {
-        toast.success(`Product successfully updated`, {
+        toast.success("Product updated successfully!", {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 2000,
         });
         navigate("/admin/allproductslist");
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
       toast.error("Product update failed. Try again.", {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
@@ -109,13 +110,12 @@ const AdminProductUpdate = () => {
     }
   };
 
+  // Deleting the product
   const handleDelete = async () => {
-    try {
-      let answer = window.confirm(
-        "Are you sure you want to delete this product?"
-      );
-      if (!answer) return;
+    const confirmation = window.confirm("Are you sure you want to delete this product?");
+    if (!confirmation) return;
 
+    try {
       const { data } = await deleteProduct(params._id);
       toast.success(`"${data.name}" is deleted`, {
         position: toast.POSITION.TOP_RIGHT,
@@ -123,8 +123,8 @@ const AdminProductUpdate = () => {
       });
       navigate("/admin/allproductslist");
     } catch (err) {
-      console.log(err);
-      toast.error("Delete failed. Try again.", {
+      console.error(err);
+      toast.error("Failed to delete the product. Try again.", {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
       });
@@ -132,137 +132,169 @@ const AdminProductUpdate = () => {
   };
 
   return (
-    <>
-      <div className="container  xl:mx-[9rem] sm:mx-[0]">
-        <div className="flex flex-col md:flex-row">
+    <div className="container mx-auto py-8 -ml-12">
+      <div className="flex flex-col md:flex-row justify-center items-start">
+        {/* Admin Menu */}
+        <div className="md:w-1/4 mb-6 md:mb-0">
           <AdminMenu />
-          <div className="md:w-3/4 p-3">
-            <div className="h-12">Update / Delete Product</div>
+        </div>
 
-            {image && (
-              <div className="text-center">
-                <img
-                  src={image}
-                  alt="product"
-                  className="block mx-auto w-full h-[40%]"
-                />
-              </div>
-            )}
+        {/* Form Section */}
+        <div className="w-full md:w-3/4 p-6 bg-gray-900 text-gray-200 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-center mb-6 text-gray-100">
+            Update/Delete Product
+          </h2>
 
-            <div className="mb-3">
-              <label className="text-white  py-2 px-4 block w-full text-center rounded-lg cursor-pointer font-bold py-11">
-                {image ? image.name : "Upload image"}
+          {/* Image Preview */}
+          {image && (
+            <div className="text-center mb-4">
+              <img
+                src={image}
+                alt="Product"
+                className="max-w-full h-64 object-cover rounded-lg shadow-md"
+              />
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit}>
+            {/* Image Upload */}
+            <div className="mb-4">
+              <label
+                htmlFor="imageUpload"
+                className="block w-full text-center py-2 px-4 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-700 transition duration-300 text-gray-200"
+              >
+                {image ? image.name : "Upload Image"}
                 <input
+                  id="imageUpload"
                   type="file"
                   name="image"
                   accept="image/*"
                   onChange={uploadFileHandler}
-                  className="text-white"
+                  className="hidden"
                 />
               </label>
             </div>
 
-            <div className="p-3">
-              <div className="flex flex-wrap">
-                <div className="one">
-                  <label htmlFor="name">Name</label> <br />
-                  <input
-                    type="text"
-                    className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white mr-[5rem]"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </div>
-
-                <div className="two">
-                  <label htmlFor="name block">Price</label> <br />
-                  <input
-                    type="number"
-                    className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white "
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                  />
-                </div>
+            {/* Name and Price */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label htmlFor="name" className="block mb-2">Name</label>
+                <input
+                  id="name"
+                  type="text"
+                  className="w-full p-3 bg-gray-800 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-500 hover:shadow-lg transition duration-300"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
               </div>
-
-              <div className="flex flex-wrap">
-                <div>
-                  <label htmlFor="name block">Quantity</label> <br />
-                  <input
-                    type="number"
-                    min="1"
-                    className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white mr-[5rem]"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="name block">Brand</label> <br />
-                  <input
-                    type="text"
-                    className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white "
-                    value={brand}
-                    onChange={(e) => setBrand(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <label htmlFor="" className="my-5">
-                Description
-              </label>
-              <textarea
-                type="text"
-                className="p-2 mb-3 bg-[#101011]  border rounded-lg w-[95%] text-white"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-
-              <div className="flex justify-between">
-                <div>
-                  <label htmlFor="name block">Count In Stock</label> <br />
-                  <input
-                    type="text"
-                    className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white "
-                    value={stock}
-                    onChange={(e) => setStock(e.target.value)}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="">Category</label> <br />
-                  <select
-                    placeholder="Choose Category"
-                    className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white mr-[5rem]"
-                    onChange={(e) => setCategory(e.target.value)}
-                  >
-                    {categories?.map((c) => (
-                      <option key={c._id} value={c._id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="">
-                <button
-                  onClick={handleSubmit}
-                  className="py-4 px-10 mt-5 rounded-lg text-lg font-bold  bg-green-600 mr-6"
-                >
-                  Update
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="py-4 px-10 mt-5 rounded-lg text-lg font-bold  bg-pink-600"
-                >
-                  Delete
-                </button>
+              <div>
+                <label htmlFor="price" className="block mb-2">Price</label>
+                <input
+                  id="price"
+                  type="number"
+                  className="w-full p-3 bg-gray-800 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-500 hover:shadow-lg transition duration-300"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  required
+                />
               </div>
             </div>
-          </div>
+
+            {/* Quantity and Brand */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label htmlFor="quantity" className="block mb-2">Quantity</label>
+                <input
+                  id="quantity"
+                  type="number"
+                  className="w-full p-3 bg-gray-800 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-500 hover:shadow-lg transition duration-300"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="brand" className="block mb-2">Brand</label>
+                <input
+                  id="brand"
+                  type="text"
+                  className="w-full p-3 bg-gray-800 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-500 hover:shadow-lg transition duration-300"
+                  value={brand}
+                  onChange={(e) => setBrand(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="mb-4">
+              <label htmlFor="description" className="block mb-2">Description</label>
+              <textarea
+                id="description"
+                className="w-full p-3 bg-gray-800 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-500 hover:shadow-lg transition duration-300"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+                rows={4}
+              />
+            </div>
+
+            {/* Stock and Category */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label htmlFor="stock" className="block mb-2">Stock</label>
+                <input
+                  id="stock"
+                  type="number"
+                  className="w-full p-3 bg-gray-800 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-500 hover:shadow-lg transition duration-300"
+                  value={stock}
+                  onChange={(e) => setStock(Number(e.target.value))}
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="category" className="block mb-2">Category</label>
+                <select
+                  id="category"
+                  className="w-full p-3 bg-gray-800 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-500 hover:shadow-lg transition duration-300"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  required
+                >
+                  <option value="" disabled>
+                    Select Category
+                  </option>
+                  {categories?.map((c) => (
+                    <option key={c._id} value={c._id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Update and Delete buttons */}
+            <div className="flex justify-center gap-6">
+              <button
+                type="submit"
+                className="w-40 py-3 bg-pink-600 rounded-lg font-semibold text-white hover:bg-pink-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              >
+                Update
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="w-40 py-3 bg-red-600 rounded-lg font-semibold text-white hover:bg-red-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              >
+                Delete
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

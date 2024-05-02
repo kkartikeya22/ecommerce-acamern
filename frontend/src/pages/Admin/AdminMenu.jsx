@@ -1,107 +1,105 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { FaTimes } from "react-icons/fa";
+import { FaBars, FaTimes } from "react-icons/fa";
 
 const AdminMenu = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
 
-  return (
-    <>
-      <button
-        className={`${
-          isMenuOpen ? "top-2 right-2" : "top-5 right-7"
-        } bg-[#151515] p-2 fixed rounded-lg`}
-        onClick={toggleMenu}
-      >
-        {isMenuOpen ? (
-          <FaTimes color="white" />
-        ) : (
-          <>
-            <div className="w-6 h-0.5 bg-gray-200 my-1"></div>
-            <div className="w-6 h-0.5 bg-gray-200 my-1"></div>
-            <div className="w-6 h-0.5 bg-gray-200 my-1"></div>
-          </>
-        )}
-      </button>
+    return (
+        <>
+            {/* Menu Button */}
+            <button
+                className={`fixed top-5 right-7 bg-gray-900 p-3 rounded-full z-50 ${
+                    isMenuOpen ? "transform rotate-90" : ""
+                } transition-transform duration-300 focus:outline-none`}
+                onClick={toggleMenu}
+            >
+                {isMenuOpen ? (
+                    <FaTimes size={20} color="white" />
+                ) : (
+                    <FaBars size={20} color="white" />
+                )}
+            </button>
 
-      {isMenuOpen && (
-        <section className="bg-[#151515] p-4 fixed right-7 top-5">
-          <ul className="list-none mt-2">
-            <li>
-              <NavLink
-                className="list-item py-2 px-3 block mb-5 hover:bg-[#2E2D2D] rounded-sm"
-                to="/admin/dashboard"
-                style={({ isActive }) => ({
-                  color: isActive ? "greenyellow" : "white",
-                })}
-              >
-                Admin Dashboard
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                className="list-item py-2 px-3 block mb-5 hover:bg-[#2E2D2D] rounded-sm"
-                to="/admin/categorylist"
-                style={({ isActive }) => ({
-                  color: isActive ? "greenyellow" : "white",
-                })}
-              >
-                Create Category
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                className="list-item py-2 px-3 block mb-5 hover:bg-[#2E2D2D] rounded-sm"
-                to="/admin/productlist"
-                style={({ isActive }) => ({
-                  color: isActive ? "greenyellow" : "white",
-                })}
-              >
-                Create Product
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                className="list-item py-2 px-3 block mb-5 hover:bg-[#2E2D2D] rounded-sm"
-                to="/admin/allproductslist"
-                style={({ isActive }) => ({
-                  color: isActive ? "greenyellow" : "white",
-                })}
-              >
-                All Products
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                className="list-item py-2 px-3 block mb-5 hover:bg-[#2E2D2D] rounded-sm"
-                to="/admin/userlist"
-                style={({ isActive }) => ({
-                  color: isActive ? "greenyellow" : "white",
-                })}
-              >
-                Manage Users
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                className="list-item py-2 px-3 block mb-5 hover:bg-[#2E2D2D] rounded-sm"
-                to="/admin/orderlist"
-                style={({ isActive }) => ({
-                  color: isActive ? "greenyellow" : "white",
-                })}
-              >
-                Manage Orders
-              </NavLink>
-            </li>
-          </ul>
-        </section>
-      )}
-    </>
-  );
+            {/* Admin Menu */}
+            {isMenuOpen && (
+                <section className="fixed top-20 right-7 bg-gray-800 text-white p-4 rounded-lg shadow-lg z-40 transition-transform duration-300 transform translate-x-0">
+                    <ul className="space-y-4">
+                        <li>
+                            <NavLink
+                                className="block py-2 px-3 rounded-md transition-colors duration-200 hover:bg-gray-700"
+                                to="/admin/dashboard"
+                                style={({ isActive }) => ({
+                                    color: isActive ? "#10B981" : "white",
+                                })}
+                            >
+                                Admin Dashboard
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                className="block py-2 px-3 rounded-md transition-colors duration-200 hover:bg-gray-700"
+                                to="/admin/categorylist"
+                                style={({ isActive }) => ({
+                                    color: isActive ? "#10B981" : "white",
+                                })}
+                            >
+                                Create Category
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                className="block py-2 px-3 rounded-md transition-colors duration-200 hover:bg-gray-700"
+                                to="/admin/productlist"
+                                style={({ isActive }) => ({
+                                    color: isActive ? "#10B981" : "white",
+                                })}
+                            >
+                                Create Product
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                className="block py-2 px-3 rounded-md transition-colors duration-200 hover:bg-gray-700"
+                                to="/admin/allproductslist"
+                                style={({ isActive }) => ({
+                                    color: isActive ? "#10B981" : "white",
+                                })}
+                            >
+                                All Products
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                className="block py-2 px-3 rounded-md transition-colors duration-200 hover:bg-gray-700"
+                                to="/admin/userlist"
+                                style={({ isActive }) => ({
+                                    color: isActive ? "#10B981" : "white",
+                                })}
+                            >
+                                Manage Users
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                className="block py-2 px-3 rounded-md transition-colors duration-200 hover:bg-gray-700"
+                                to="/admin/orderlist"
+                                style={({ isActive }) => ({
+                                    color: isActive ? "#10B981" : "white",
+                                })}
+                            >
+                                Manage Orders
+                            </NavLink>
+                        </li>
+                    </ul>
+                </section>
+            )}
+        </>
+    );
 };
 
 export default AdminMenu;

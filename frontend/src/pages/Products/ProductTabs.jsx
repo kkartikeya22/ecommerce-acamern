@@ -30,37 +30,26 @@ const ProductTabs = ({
     <div className="flex flex-col md:flex-row mt-6">
       {/* Navigation Tabs */}
       <nav className="mb-4 md:mb-0 md:mr-8">
-        <div
-          className={`p-4 cursor-pointer text-lg text-white ${
-            activeTab === 1 ? "font-bold bg-pink-600 rounded-lg" : ""
-          }`}
-          onClick={() => handleTabClick(1)}
-        >
-          Write Your Review
-        </div>
-        <div
-          className={`p-4 cursor-pointer text-lg text-white ${
-            activeTab === 2 ? "font-bold bg-pink-600 rounded-lg" : ""
-          }`}
-          onClick={() => handleTabClick(2)}
-        >
-          All Reviews
-        </div>
-        <div
-          className={`p-4 cursor-pointer text-lg text-white ${
-            activeTab === 3 ? "font-bold bg-pink-600 rounded-lg" : ""
-          }`}
-          onClick={() => handleTabClick(3)}
-        >
-          Related Products
-        </div>
+        {["Write Your Review", "All Reviews", "Related Products"].map(
+          (tabLabel, index) => (
+            <div
+              key={index}
+              className={`p-4 cursor-pointer text-lg text-white ${
+                activeTab === index + 1 ? "font-bold bg-pink-600 rounded-lg" : ""
+              } hover:bg-pink-700 transition-colors`}
+              onClick={() => handleTabClick(index + 1)}
+            >
+              {tabLabel}
+            </div>
+          )
+        )}
       </nav>
 
       {/* Tab Content */}
       <div className="flex-1">
         {/* Write Your Review Tab */}
         {activeTab === 1 && (
-          <div className="mt-4">
+          <div className="mt-4 bg-gray-900 p-4 rounded-lg">
             {userInfo ? (
               <form onSubmit={submitHandler}>
                 <div className="mb-4">
@@ -122,7 +111,7 @@ const ProductTabs = ({
 
         {/* All Reviews Tab */}
         {activeTab === 2 && (
-          <div className="bg-gray-800 p-4 rounded-lg">
+          <div className="bg-gray-900 p-4 rounded-lg">
             {product.reviews.length === 0 && (
               <p className="text-white">No Reviews</p>
             )}
@@ -131,7 +120,7 @@ const ProductTabs = ({
               {product.reviews.map((review) => (
                 <div
                   key={review._id}
-                  className="mb-4 bg-gray-700 p-4 rounded-lg"
+                  className="mb-4 bg-gray-800 p-4 rounded-lg"
                 >
                   <div className="flex justify-between text-white">
                     <strong>{review.name}</strong>
@@ -147,15 +136,15 @@ const ProductTabs = ({
 
         {/* Related Products Tab */}
         {activeTab === 3 && (
-          <section className="ml-4 flex flex-wrap">
-            {!data ? (
-              <Loader />
-            ) : (
+          <section className="flex flex-wrap">
+            {data ? (
               data.map((product) => (
                 <div key={product._id} className="m-2">
                   <SmallProduct product={product} />
                 </div>
               ))
+            ) : (
+              <Loader />
             )}
           </section>
         )}

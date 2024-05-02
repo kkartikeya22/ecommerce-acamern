@@ -23,92 +23,90 @@ const Cart = () => {
   };
 
   return (
-    <>
-      <div className="container flex justify-around items-start flex wrap mx-auto mt-8">
-        {cartItems.length === 0 ? (
-          <div>
-            Your cart is empty <Link to="/shop">Go To Shop</Link>
-          </div>
-        ) : (
-          <>
-            <div className="flex flex-col w-[80%]">
-              <h1 className="text-2xl font-semibold mb-4">Shopping Cart</h1>
+    <div className="container mx-auto mt-12 p-6 bg-gray-800 rounded-lg shadow-lg">
+      <h1 className="text-3xl font-bold text-white mb-6">Shopping Cart</h1>
 
-              {cartItems.map((item) => (
-                <div key={item._id} className="flex items-enter mb-[1rem] pb-2">
-                  <div className="w-[5rem] h-[5rem]">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover rounded"
-                    />
-                  </div>
-
-                  <div className="flex-1 ml-4">
-                    <Link to={`/product/${item._id}`} className="text-pink-500">
-                      {item.name}
-                    </Link>
-
-                    <div className="mt-2 text-white">{item.brand}</div>
-                    <div className="mt-2 text-white font-bold">
-                      $ {item.price}
-                    </div>
-                  </div>
-
-                  <div className="w-24">
-                    <select
-                      className="w-full p-1 border rounded text-black"
-                      value={item.qty}
-                      onChange={(e) =>
-                        addToCartHandler(item, Number(e.target.value))
-                      }
-                    >
-                      {[...Array(item.countInStock).keys()].map((x) => (
-                        <option key={x + 1} value={x + 1}>
-                          {x + 1}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <button
-                      className="text-red-500 mr-[5rem]"
-                      onClick={() => removeFromCartHandler(item._id)}
-                    >
-                      <FaTrash className="ml-[1rem] mt-[.5rem]" />
-                    </button>
-                  </div>
+      {cartItems.length === 0 ? (
+        <div className="text-white">
+          Your cart is empty.{" "}
+          <Link to="/shop" className="text-pink-500 hover:underline">
+            Go To Shop
+          </Link>
+        </div>
+      ) : (
+        <div className="flex flex-col lg:flex-row justify-between">
+          {/* Cart items list */}
+          <div className="flex-1 mb-8 lg:mb-0 lg:pr-6">
+            {cartItems.map((item) => (
+              <div key={item._id} className="flex items-center mb-6">
+                {/* Product image */}
+                <div className="w-20 h-20">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-cover rounded-md"
+                  />
                 </div>
-              ))}
 
-              <div className="mt-8 w-[40rem]">
-                <div className="p-4 rounded-lg">
-                  <h2 className="text-xl font-semibold mb-2">
-                    Items ({cartItems.reduce((acc, item) => acc + item.qty, 0)})
-                  </h2>
+                {/* Product info */}
+                <div className="flex-1 ml-6">
+                  <Link to={`/product/${item._id}`} className="text-pink-500 hover:underline">
+                    {item.name}
+                  </Link>
+                  <div className="text-white mt-2">{item.brand}</div>
+                  <div className="text-white font-bold mt-2">${item.price}</div>
+                </div>
 
-                  <div className="text-2xl font-bold">
-                    ${" "}
-                    {cartItems
-                      .reduce((acc, item) => acc + item.qty * item.price, 0)
-                      .toFixed(2)}
-                  </div>
-
-                  <button
-                    className="bg-pink-500 mt-4 py-2 px-4 rounded-full text-lg w-full"
-                    disabled={cartItems.length === 0}
-                    onClick={checkoutHandler}
+                {/* Quantity selector */}
+                <div className="flex items-center ml-4">
+                  <select
+                    className="bg-gray-700 text-white p-2 rounded-md"
+                    value={item.qty}
+                    onChange={(e) => addToCartHandler(item, Number(e.target.value))}
                   >
-                    Proceed To Checkout
-                  </button>
+                    {[...Array(item.countInStock).keys()].map((x) => (
+                      <option key={x + 1} value={x + 1}>
+                        {x + 1}
+                      </option>
+                    ))}
+                  </select>
                 </div>
+
+                {/* Remove item button */}
+                <button
+                  className="ml-4 text-red-500 hover:text-red-600"
+                  onClick={() => removeFromCartHandler(item._id)}
+                >
+                  <FaTrash size={18} />
+                </button>
               </div>
+            ))}
+          </div>
+
+          {/* Cart summary */}
+          <div className="bg-gray-700 p-6 rounded-lg shadow-lg w-full lg:w-1/3">
+            <h2 className="text-xl font-bold text-white mb-4">Summary</h2>
+            <div className="text-lg text-white mb-4">
+              Items: {cartItems.reduce((acc, item) => acc + item.qty, 0)}
             </div>
-          </>
-        )}
-      </div>
-    </>
+            <div className="text-2xl font-bold text-white">
+              Total: $
+              {cartItems
+                .reduce((acc, item) => acc + item.qty * item.price, 0)
+                .toFixed(2)}
+            </div>
+
+            <button
+              className="bg-pink-500 text-white w-full py-2 mt-6 rounded-lg hover:bg-pink-600"
+              disabled={cartItems.length === 0}
+              onClick={checkoutHandler}
+            >
+              Proceed To Checkout
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -41,14 +41,14 @@ const ProductList = () => {
       const { data } = await createProduct(productData);
 
       if (data.error) {
-        toast.error("Product create failed. Try Again.");
+        toast.error("Product creation failed. Please try again.");
       } else {
-        toast.success(`${data.name} is created`);
+        toast.success(`${data.name} has been created`);
         navigate("/");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Product create failed. Try Again.");
+      toast.error("Product creation failed. Please try again.");
     }
   };
 
@@ -67,106 +67,127 @@ const ProductList = () => {
   };
 
   return (
-    <div className="container xl:mx-[9rem] sm:mx-[0]">
-      <div className="flex flex-col md:flex-row">
-        <AdminMenu />
-        <div className="md:w-3/4 p-3">
-          <div className="h-12">Create Product</div>
+    <div className="container mx-auto py-8 -ml-12"> {/* Shifted left by 3rem or around 50px */}
+      <div className="flex flex-col md:flex-row justify-center items-center">
+        {/* Admin Menu */}
+        <div className="md:w-1/4 mb-6 md:mr-8">
+          <AdminMenu />
+        </div>
 
+        {/* Form Section */}
+        <div className="w-full md:w-3/4 bg-gray-800 text-white p-6 rounded-lg shadow-lg text-center">
+          <h2 className="text-2xl font-semibold mb-6">Create Product</h2>
+
+          {/* Image Preview */}
           {imageUrl && (
-            <div className="text-center">
+            <div className="mb-6 text-center">
               <img
                 src={imageUrl}
                 alt="product"
-                className="block mx-auto max-h-[200px]"
+                className="mx-auto w-48 h-48 object-cover rounded-lg"
               />
             </div>
           )}
 
-          <div className="mb-3">
-            <label className="border text-white px-4 block w-full text-center rounded-lg cursor-pointer font-bold py-11">
+          {/* Image Upload */}
+          <div className="mb-6">
+            <label className="block text-center p-3 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors duration-300">
               {image ? image.name : "Upload Image"}
-
               <input
                 type="file"
                 name="image"
                 accept="image/*"
                 onChange={uploadFileHandler}
-                className={!image ? "hidden" : "text-white"}
+                className="hidden"
               />
             </label>
           </div>
 
-          <div className="p-3">
-            <div className="flex flex-wrap">
-              <div className="one">
-                <label htmlFor="name">Name</label> <br />
+          {/* Form Fields */}
+          <form onSubmit={handleSubmit}>
+            {/* Name and Price */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+              <div>
+                <label className="block mb-2">Name</label>
                 <input
                   type="text"
-                  className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                  className="w-full p-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  required
                 />
               </div>
-              <div className="two ml-10 ">
-                <label htmlFor="name block">Price</label> <br />
+              <div>
+                <label className="block mb-2">Price</label>
                 <input
                   type="number"
-                  className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                  className="w-full p-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
+                  required
                 />
               </div>
             </div>
-            <div className="flex flex-wrap">
-              <div className="one">
-                <label htmlFor="name block">Quantity</label> <br />
+
+            {/* Quantity and Brand */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+              <div>
+                <label className="block mb-2">Quantity</label>
                 <input
                   type="number"
-                  className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                  className="w-full p-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
+                  required
                 />
               </div>
-              <div className="two ml-10 ">
-                <label htmlFor="name block">Brand</label> <br />
+              <div>
+                <label className="block mb-2">Brand</label>
                 <input
                   type="text"
-                  className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                  className="w-full p-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
+                  required
                 />
               </div>
             </div>
 
-            <label htmlFor="" className="my-5">
-              Description
-            </label>
-            <textarea
-              type="text"
-              className="p-2 mb-3 bg-[#101011] border rounded-lg w-[95%] text-white"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            ></textarea>
+            {/* Description */}
+            <div className="mb-4">
+              <label className="block mb-2">Description</label>
+              <textarea
+                className="w-full p-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+                rows={3}
+              />
+            </div>
 
-            <div className="flex justify-between">
+            {/* Stock and Category */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
               <div>
-                <label htmlFor="name block">Count In Stock</label> <br />
+                <label className="block mb-2">Count In Stock</label>
                 <input
-                  type="text"
-                  className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                  type="number"
+                  className="w-full p-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
                   value={stock}
                   onChange={(e) => setStock(e.target.value)}
+                  required
                 />
               </div>
-
               <div>
-                <label htmlFor="">Category</label> <br />
+                <label className="block mb-2">Category</label>
                 <select
-                  placeholder="Choose Category"
-                  className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                  className="w-full p-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  value={category}
                   onChange={(e) => setCategory(e.target.value)}
+                  required
                 >
+                  <option value="" disabled>
+                    Select Category
+                  </option>
                   {categories?.map((c) => (
                     <option key={c._id} value={c._id}>
                       {c.name}
@@ -176,13 +197,14 @@ const ProductList = () => {
               </div>
             </div>
 
+            {/* Submit Button */}
             <button
-              onClick={handleSubmit}
-              className="py-4 px-10 mt-5 rounded-lg text-lg font-bold bg-pink-600"
+              type="submit"
+              className="w-full py-3 bg-pink-600 rounded-lg font-semibold text-white hover:bg-pink-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-pink-500"
             >
-              Submit
+              Create Product
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </div>

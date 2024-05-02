@@ -21,6 +21,12 @@ const AdminDashboard = () => {
     options: {
       chart: {
         type: "line",
+        toolbar: {
+          show: false,
+        },
+        animations: {
+          enabled: true,
+        },
       },
       tooltip: {
         theme: "dark",
@@ -35,22 +41,44 @@ const AdminDashboard = () => {
       title: {
         text: "Sales Trend",
         align: "left",
+        style: {
+          fontWeight: "bold",
+          color: "#fff",
+        },
       },
       grid: {
-        borderColor: "#ccc",
+        borderColor: "#4B5563",
       },
       markers: {
-        size: 1,
+        size: 4,
+        colors: ["#00E396"],
+        strokeColors: "#00E396",
       },
       xaxis: {
         categories: [],
+        labels: {
+          style: {
+            colors: "#fff",
+          },
+        },
         title: {
           text: "Date",
+          style: {
+            color: "#fff",
+          },
         },
       },
       yaxis: {
+        labels: {
+          style: {
+            color: "#fff",
+          },
+        },
         title: {
           text: "Sales",
+          style: {
+            color: "#fff",
+          },
         },
         min: 0,
       },
@@ -60,6 +88,9 @@ const AdminDashboard = () => {
         floating: true,
         offsetY: -25,
         offsetX: -5,
+        labels: {
+          colors: "#fff",
+        },
       },
     },
     series: [{ name: "Sales", data: [] }],
@@ -80,7 +111,6 @@ const AdminDashboard = () => {
             categories: formattedSalesDate.map((item) => item.x),
           },
         },
-
         series: [
           { name: "Sales", data: formattedSalesDate.map((item) => item.y) },
         ],
@@ -92,50 +122,55 @@ const AdminDashboard = () => {
     <>
       <AdminMenu />
 
-      <section className="xl:ml-[4rem] md:ml-[0rem]">
-        <div className="w-[80%] flex justify-around flex-wrap">
-          <div className="rounded-lg bg-black p-5 w-[20rem] mt-5">
+      <section className="xl:ml-[4rem] md:ml-0">
+        <div className="w-full flex justify-around flex-wrap">
+          {/* Sales Card */}
+          <div className="rounded-lg bg-gray-800 text-white p-5 w-[20rem] mt-5 shadow-lg hover:shadow-xl transition-shadow duration-300">
             <div className="font-bold rounded-full w-[3rem] bg-pink-500 text-center p-3">
               $
             </div>
-
-            <p className="mt-5">Sales</p>
+            <p className="mt-5 text-gray-400">Sales</p>
             <h1 className="text-xl font-bold">
-              $ {isLoading ? <Loader /> : sales.totalSales.toFixed(2)}
+              $ {isLoading ? <Loader /> : sales?.totalSales?.toFixed(2)}
             </h1>
           </div>
-          <div className="rounded-lg bg-black p-5 w-[20rem] mt-5">
-            <div className="font-bold rounded-full w-[3rem] bg-pink-500 text-center p-3">
-              $
-            </div>
 
-            <p className="mt-5">Customers</p>
+          {/* Customers Card */}
+          <div className="rounded-lg bg-gray-800 text-white p-5 w-[20rem] mt-5 shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div className="font-bold rounded-full w-[3rem] bg-pink-500 text-center p-3">
+              👥
+            </div>
+            <p className="mt-5 text-gray-400">Customers</p>
             <h1 className="text-xl font-bold">
-              $ {isLoading ? <Loader /> : customers?.length}
+              {loading ? <Loader /> : customers?.length}
             </h1>
           </div>
-          <div className="rounded-lg bg-black p-5 w-[20rem] mt-5">
-            <div className="font-bold rounded-full w-[3rem] bg-pink-500 text-center p-3">
-              $
-            </div>
 
-            <p className="mt-5">All Orders</p>
+          {/* Orders Card */}
+          <div className="rounded-lg bg-gray-800 text-white p-5 w-[20rem] mt-5 shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div className="font-bold rounded-full w-[3rem] bg-pink-500 text-center p-3">
+              📦
+            </div>
+            <p className="mt-5 text-gray-400">All Orders</p>
             <h1 className="text-xl font-bold">
-              $ {isLoading ? <Loader /> : orders?.totalOrders}
+              {loadingTwo ? <Loader /> : orders?.totalOrders}
             </h1>
           </div>
         </div>
 
-        <div className="ml-[10rem] mt-[4rem]">
+        {/* Sales Chart */}
+        <div className="ml-10 mt-12">
           <Chart
             options={state.options}
             series={state.series}
-            type="bar"
+            type="line"
             width="70%"
+            height="400"
           />
         </div>
 
-        <div className="mt-[4rem]">
+        {/* Order List */}
+        <div className="mt-12 ml-10">
           <OrderList />
         </div>
       </section>
