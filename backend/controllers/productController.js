@@ -1,5 +1,6 @@
 import asyncHandler from "../middlewares/asyncHandler.js";
 import Product from "../models/productModel.js";
+import mongoose from "mongoose";
 
 const addProduct = asyncHandler(async (req, res) => {
   try {
@@ -34,36 +35,46 @@ const updateProductDetails = asyncHandler(async (req, res) => {
   try {
     const { name, description, price, category, quantity, brand } = req.fields;
 
-    // Validation
+    // Input validation
     switch (true) {
       case !name:
-        return res.json({ error: "Name is required" });
+        return res.status(400).json({ error: "Name is required" });
       case !brand:
-        return res.json({ error: "Brand is required" });
+        return res.status(400).json({ error: "Brand is required" });
       case !description:
-        return res.json({ error: "Description is required" });
+        return res.status(400).json({ error: "Description is required" });
       case !price:
-        return res.json({ error: "Price is required" });
+        return res.status(400).json({ error: "Price is required" });
       case !category:
-        return res.json({ error: "Category is required" });
+        return res.status(400).json({ error: "Category is required" });
       case !quantity:
-        return res.json({ error: "Quantity is required" });
+        return res.status(400).json({ error: "Quantity is required" });
     }
 
+    // Validate category ObjectId
+    if (!mongoose.Types.ObjectId.isValid(category)) {
+      return res.status(400).json({ error: "Invalid category ID" });
+    }
+
+    // Find and update the product
     const product = await Product.findByIdAndUpdate(
       req.params.id,
-      { ...req.fields },
+      { name, description, price, category, quantity, brand },
       { new: true }
     );
 
-    await product.save();
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
 
+    // Respond with the updated product
     res.json(product);
   } catch (error) {
     console.error(error);
-    res.status(400).json(error.message);
+    res.status(500).json({ error: "Server error" });
   }
 });
+
 
 const removeProduct = asyncHandler(async (req, res) => {
   try {
