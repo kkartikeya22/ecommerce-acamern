@@ -53,6 +53,7 @@ const PlaceOrder = () => {
             <table className="w-full bg-gray-900 rounded-lg overflow-hidden border-separate">
               <thead className="bg-gray-700 text-white">
                 <tr>
+                  <th className="py-3 px-4">Image</th>
                   <th className="py-3 px-4">Product</th>
                   <th className="py-3 px-4">Quantity</th>
                   <th className="py-3 px-4">Price</th>
@@ -62,14 +63,17 @@ const PlaceOrder = () => {
               <tbody>
                 {cart.cartItems.map((item, index) => (
                   <tr key={index} className="border-b border-gray-700 text-white hover:bg-gray-700 transition duration-200">
-                    <td className="py-2 px-4">
-                      <Link to={`/product/${item.product}`} className="text-blue-500 hover:text-blue-400 transition duration-200">
+                    <td className="py-2 px-4 flex justify-center"><img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-16 h-16 object-cover"
+                      /></td>
+                    <td className="py-2 px-4  text-center text-pink-500">
                         {item.name}
-                      </Link>
                     </td>
-                    <td className="py-2 px-4">{item.qty}</td>
-                    <td className="py-2 px-4">${Number(item.price).toFixed(2)}</td>
-                    <td className="py-2 px-4">${Number(item.qty * item.price).toFixed(2)}</td>
+                    <td className="py-2 px-4  text-center">{item.qty}</td>
+                    <td className="py-2 px-4  text-center">${Number(item.price).toFixed(2)}</td>
+                    <td className="py-2 px-4  text-center">${Number(item.qty * item.price).toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>
