@@ -1,17 +1,17 @@
+import React from 'react';
 import { useGetTopProductsQuery } from "../../redux/api/productApiSlice";
 import Message from "../../components/Message";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import moment from "moment";
-import {
-  FaBox,
-  FaShoppingCart,
-  FaStar,
-  FaStore,
-} from "react-icons/fa";
+import { FaBox, FaShoppingCart, FaStar, FaStore } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../redux/features/cart/cartSlice";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 const ProductCarousel = () => {
+  const dispatch = useDispatch();
   const { data: products, isLoading, error } = useGetTopProductsQuery();
 
   const settings = {
@@ -29,15 +29,23 @@ const ProductCarousel = () => {
   const renderStars = (rating) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
-      if (i <= rating) {
-        // Filled star if rating is equal to or greater than i
-        stars.push(<FaStar key={i} className="text-yellow-500 mr-1" />);
-      } else {
-        // Empty star if rating is less than i
-        stars.push(<FaStar key={i} className="text-gray-300 mr-1" />);
-      }
+      stars.push(
+        <FaStar
+          key={i}
+          className={i <= rating ? "text-yellow-500" : "text-gray-300"}
+        />
+      );
     }
     return stars;
+  };
+
+  // Function to handle adding products to the cart
+  const addToCartHandler = (product) => {
+    dispatch(addToCart({ ...product, qty: 1 }));
+    toast.success("Item added successfully", {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 2000,
+    });
   };
 
   return (
@@ -63,17 +71,31 @@ const ProductCarousel = () => {
               quantity,
               countInStock,
             }) => (
-              <div key={_id} className="p-4 bg-gray-800 text-white rounded-lg shadow-lg">
-                <img
-                  src={image}
-                  alt={name}
-                  className="w-full rounded-lg object-cover h-[30rem]"
-                />
+              <div
+                key={_id}
+                className="p-4 bg-gray-800 text-white rounded-lg shadow-lg"
+              >
+                {/* Add a link to the product page */}
+                <Link to={`/product/${_id}`} className="block relative">
+                  <img
+                    src={image}
+                    alt={name}
+                    className="w-full rounded-lg object-cover h-[30rem]"
+                  />
+                </Link>
 
                 <div className="mt-4 flex flex-col lg:flex-row justify-between">
                   <div className="lg:w-2/3">
-                    <h2 className="text-xl font-bold mb-2">{name}</h2>
-                    <p className="text-lg mb-2">Price: ${price}</p>
+                    {/* Centralized and bold product name */}
+                    <h2 className="text-xl font-bold mb-2 text-center">
+                      {name}
+                    </h2>
+                    <p className="text-lg font-semibold text-pink-500">
+                      {price.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      })}
+                    </p>
                     <p className="text-sm mb-4">
                       {description.substring(0, 170)}...
                     </p>
@@ -96,6 +118,21 @@ const ProductCarousel = () => {
                         <FaBox className="mr-2 text-primary" />
                         <p>In Stock: {countInStock}</p>
                       </div>
+
+                      {/* Add to Cart button */}
+                      <button
+                        className="mt-4 p-2 bg-gray-200 hover:bg-gray-300 rounded-full flex justify-center items-center"
+                        onClick={() => addToCartHandler({
+                          _id,
+                          name,
+                          image,
+                          price,
+                          quantity: 1,
+                        })}
+                        aria-label="Add to Cart"
+                      >
+                        <FaShoppingCart size={25} className="text-gray-700" />
+                      </button>
                     </div>
                   </div>
                 </div>

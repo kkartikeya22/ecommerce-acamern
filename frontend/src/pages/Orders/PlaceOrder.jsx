@@ -1,3 +1,4 @@
+// Import necessary dependencies
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -10,8 +11,8 @@ import { clearCartItems } from "../../redux/features/cart/cartSlice";
 
 const PlaceOrder = () => {
   const navigate = useNavigate();
-
   const cart = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
 
   const [createOrder, { isLoading, error }] = useCreateOrderMutation();
 
@@ -20,8 +21,6 @@ const PlaceOrder = () => {
       navigate("/shipping");
     }
   }, [cart.paymentMethod, cart.shippingAddress.address, navigate]);
-
-  const dispatch = useDispatch();
 
   const placeOrderHandler = async () => {
     try {
@@ -43,47 +42,34 @@ const PlaceOrder = () => {
 
   return (
     <>
-      <ProgressSteps step1 step2 step3 step4 />
+      <ProgressSteps step1 step2 step3 />
 
-      <div className="container mx-auto mt-8 px-4">
-        {/* Display message if the cart is empty */}
+      <div className="container mx-auto mt-8">
         {cart.cartItems.length === 0 ? (
           <Message>Your cart is empty</Message>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead className="bg-gray-100">
+          <div className="bg-gray-800 rounded-lg p-6 mt-4">
+            <h1 className="text-2xl font-bold text-center text-white mb-6">Order Summary</h1>
+            <table className="w-full bg-gray-900 rounded-lg overflow-hidden border-separate">
+              <thead className="bg-gray-700 text-white">
                 <tr>
-                  <th className="p-2">Image</th>
-                  <th className="p-2">Product</th>
-                  <th className="p-2 text-center">Quantity</th>
-                  <th className="p-2 text-center">Price</th>
-                  <th className="p-2 text-center">Total</th>
+                  <th className="py-3 px-4">Product</th>
+                  <th className="py-3 px-4">Quantity</th>
+                  <th className="py-3 px-4">Price</th>
+                  <th className="py-3 px-4">Total</th>
                 </tr>
               </thead>
               <tbody>
                 {cart.cartItems.map((item, index) => (
-                  <tr key={index} className="border-b">
-                    <td className="p-2">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-16 h-16 object-cover rounded"
-                      />
-                    </td>
-                    <td className="p-2">
-                      <Link
-                        to={`/product/${item.product}`}
-                        className="text-pink-500 hover:underline"
-                      >
+                  <tr key={index} className="border-b border-gray-700 text-white hover:bg-gray-700 transition duration-200">
+                    <td className="py-2 px-4">
+                      <Link to={`/product/${item.product}`} className="text-blue-500 hover:text-blue-400 transition duration-200">
                         {item.name}
                       </Link>
                     </td>
-                    <td className="p-2 text-center">{item.qty}</td>
-                    <td className="p-2 text-center">${item.price.toFixed(2)}</td>
-                    <td className="p-2 text-center">
-                      ${(item.qty * item.price).toFixed(2)}
-                    </td>
+                    <td className="py-2 px-4">{item.qty}</td>
+                    <td className="py-2 px-4">${Number(item.price).toFixed(2)}</td>
+                    <td className="py-2 px-4">${Number(item.qty * item.price).toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -91,54 +77,49 @@ const PlaceOrder = () => {
           </div>
         )}
 
-        {/* Order Summary Section */}
         <div className="mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
-          <div className="p-4 bg-gray-50 rounded-lg shadow-md">
-            <ul className="mb-4 text-lg space-y-2">
+          <h2 className="text-2xl font-semibold mb-5">Summary Details</h2>
+          <div className="flex justify-between flex-wrap p-8 bg-gray-900 rounded-lg shadow-lg">
+            <ul className="text-lg text-white">
               <li>
-                <span className="font-semibold">Items:</span> ${cart.itemsPrice.toFixed(2)}
+                <span className="font-semibold">Items:</span> $ {Number(cart.itemsPrice).toFixed(2)}
               </li>
               <li>
-                <span className="font-semibold">Shipping:</span> ${cart.shippingPrice.toFixed(2)}
+                <span className="font-semibold">Shipping:</span> $ {Number(cart.shippingPrice).toFixed(2)}
               </li>
               <li>
-                <span className="font-semibold">Tax:</span> ${cart.taxPrice.toFixed(2)}
+                <span className="font-semibold">Tax:</span> $ {Number(cart.taxPrice).toFixed(2)}
               </li>
               <li>
-                <span className="font-semibold">Total:</span> ${cart.totalPrice.toFixed(2)}
+                <span className="font-semibold">Total:</span> $ {Number(cart.totalPrice).toFixed(2)}
               </li>
             </ul>
-            {/* Display shipping address */}
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold mb-2">Shipping Address</h2>
+
+            {error && <Message variant="danger">{error.data.message}</Message>}
+
+            <div className="text-white">
+              <h2 className="text-2xl font-semibold mb-4">Shipping</h2>
               <p>
-                <strong>Address:</strong> {cart.shippingAddress.address}, {cart.shippingAddress.city}, {cart.shippingAddress.postalCode}, {cart.shippingAddress.country}
+                <strong>Address:</strong> {cart.shippingAddress.address}, {cart.shippingAddress.city} {cart.shippingAddress.postalCode}, {cart.shippingAddress.country}
               </p>
             </div>
-            {/* Display payment method */}
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold mb-2">Payment Method</h2>
-              <p><strong>Method:</strong> {cart.paymentMethod}</p>
+
+            <div className="text-white">
+              <h2 className="text-2xl font-semibold mb-4">Payment Method</h2>
+              <strong>Method:</strong> {cart.paymentMethod}
             </div>
           </div>
 
-          {/* Place Order Button */}
-          <div className="mt-6">
-            <button
-              type="button"
-              className="w-full bg-pink-500 text-white py-2 px-4 rounded-lg text-lg font-semibold transition-colors hover:bg-pink-600 disabled:opacity-50"
-              disabled={cart.cartItems.length === 0}
-              onClick={placeOrderHandler}
-            >
-              Place Order
-            </button>
+          <button
+            type="button"
+            className="bg-pink-500 hover:bg-pink-600 text-white py-2 px-4 rounded-lg text-lg w-full mt-4"
+            disabled={cart.cartItems.length === 0}
+            onClick={placeOrderHandler}
+          >
+            Place Order
+          </button>
 
-            {isLoading && <Loader />}
-          </div>
-
-          {/* Display error message if any */}
-          {error && <Message variant="danger">{error.data.message}</Message>}
+          {isLoading && <Loader />}
         </div>
       </div>
     </>

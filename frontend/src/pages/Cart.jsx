@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FaTrash } from "react-icons/fa";
@@ -30,39 +31,52 @@ const Cart = () => {
         <div className="text-white">
           Your cart is empty.{" "}
           <Link to="/shop" className="text-pink-500 hover:underline">
-            Go To Shop
+            Go to Shop
           </Link>
         </div>
       ) : (
-        <div className="flex flex-col lg:flex-row justify-between">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Cart items list */}
-          <div className="flex-1 mb-8 lg:mb-0 lg:pr-6">
+          <div className="flex flex-col gap-4">
             {cartItems.map((item) => (
-              <div key={item._id} className="flex items-center mb-6">
+              <div
+                key={item._id}
+                className="flex items-center gap-4 bg-gray-700 p-4 rounded-lg shadow-md"
+              >
                 {/* Product image */}
-                <div className="w-20 h-20">
+                <div className="w-20 h-20 rounded-lg overflow-hidden">
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-full h-full object-cover rounded-md"
+                    className="w-full h-full object-cover"
                   />
                 </div>
 
                 {/* Product info */}
-                <div className="flex-1 ml-6">
-                  <Link to={`/product/${item._id}`} className="text-pink-500 hover:underline">
+                <div className="flex-1">
+                  <Link
+                    to={`/product/${item._id}`}
+                    className="text-pink-500 hover:underline"
+                  >
                     {item.name}
                   </Link>
-                  <div className="text-white mt-2">{item.brand}</div>
-                  <div className="text-white font-bold mt-2">${item.price}</div>
+                  <p className="text-sm text-white">{item.brand}</p>
+                  <p className="font-semibold text-white">
+                    {item.price.toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    })}
+                  </p>
                 </div>
 
                 {/* Quantity selector */}
-                <div className="flex items-center ml-4">
+                <div className="flex items-center">
                   <select
-                    className="bg-gray-700 text-white p-2 rounded-md"
+                    className="bg-gray-600 text-white p-2 rounded-md"
                     value={item.qty}
-                    onChange={(e) => addToCartHandler(item, Number(e.target.value))}
+                    onChange={(e) =>
+                      addToCartHandler(item, Number(e.target.value))
+                    }
                   >
                     {[...Array(item.countInStock).keys()].map((x) => (
                       <option key={x + 1} value={x + 1}>
@@ -74,7 +88,7 @@ const Cart = () => {
 
                 {/* Remove item button */}
                 <button
-                  className="ml-4 text-red-500 hover:text-red-600"
+                  className="ml-4 text-red-500 hover:text-red-700"
                   onClick={() => removeFromCartHandler(item._id)}
                 >
                   <FaTrash size={18} />
@@ -84,24 +98,24 @@ const Cart = () => {
           </div>
 
           {/* Cart summary */}
-          <div className="bg-gray-700 p-6 rounded-lg shadow-lg w-full lg:w-1/3">
+          <div className="bg-gray-700 p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-bold text-white mb-4">Summary</h2>
-            <div className="text-lg text-white mb-4">
+            <p className="text-white mb-4">
               Items: {cartItems.reduce((acc, item) => acc + item.qty, 0)}
-            </div>
-            <div className="text-2xl font-bold text-white">
-              Total: $
-              {cartItems
-                .reduce((acc, item) => acc + item.qty * item.price, 0)
-                .toFixed(2)}
-            </div>
-
+            </p>
+            <p className="text-white font-bold text-2xl mb-4">
+              Total: {cartItems.reduce((acc, item) => acc + item.qty * item.price, 0)
+                .toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })}
+            </p>
             <button
-              className="bg-pink-500 text-white w-full py-2 mt-6 rounded-lg hover:bg-pink-600"
+              className="w-full py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 focus:outline-none focus:ring-4 focus:ring-pink-300"
               disabled={cartItems.length === 0}
               onClick={checkoutHandler}
             >
-              Proceed To Checkout
+              Proceed to Checkout
             </button>
           </div>
         </div>
