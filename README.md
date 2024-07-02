@@ -1,6 +1,9 @@
 # E-Commerce Application
 
 Welcome to the E-Commerce Application! This is a comprehensive e-commerce platform designed to handle sales, orders, and customer management with an intuitive admin dashboard.
+You can view the :- <br>
+Website at :- https://aca-ecommerce.netlify.app/ <br>
+Backend at :- https://acamernproject.onrender.com <br>
 
 ## Table of Contents
 
