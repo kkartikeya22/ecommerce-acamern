@@ -38,8 +38,8 @@ To set up the project, follow these steps:
 1. **Clone the repository**:
 
     ```bash
-    git clone [your-repository-url]
-    cd [your-repository-name]
+    git clone https://github.com/kkartikeya22/acamernproject
+    cd acamernproject
     ```
 
 2. **Install dependencies**:
